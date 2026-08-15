@@ -636,6 +636,14 @@
         <div class="value num" id="kpi-aberto-periodo">0</div>
       </div>
       <div class="kpi-card resolved">
+        <div class="label">Fechamento do periodo: ja resolvidos (de tudo que abriu no periodo, ate hoje)</div>
+        <div class="value num" id="kpi-cohort-resolvidos">0</div>
+      </div>
+      <div class="kpi-card open">
+        <div class="label">Fechamento do periodo: ainda pendentes (de tudo que abriu no periodo)</div>
+        <div class="value num" id="kpi-cohort-pendentes">0</div>
+      </div>
+      <div class="kpi-card resolved">
         <div class="label">Resolvidos no periodo (abertos em periodo anterior)</div>
         <div class="value num" id="kpi-resolvido-anterior">0</div>
       </div>
@@ -1988,6 +1996,7 @@
     document.getElementById('titulo-data-periodo-2').textContent = descPeriodo(inicio, fim);
 
     let abertosPeriodo = 0, resolvidosPeriodo = 0, resolvidosAnterior = 0, resolvidosMesmo = 0, embargosPeriodo = 0;
+    let cohortResolvidos = 0, cohortPendentes = 0;
     const porResp = {};
 
     // Snapshot "ao vivo" por responsavel, separado por status especifico
@@ -2013,6 +2022,7 @@
       if (abriu) {
         abertosPeriodo++;
         porResp[d.responsavel].abertoPeriodo++;
+        if (d.resolvido) cohortResolvidos++; else cohortPendentes++;
       }
       if (resolveu) {
         resolvidosPeriodo++;
@@ -2028,6 +2038,8 @@
 
     document.getElementById('kpi-aberto-agora-resp').textContent = abertoAgoraTotal;
     document.getElementById('kpi-aberto-periodo').textContent = abertosPeriodo;
+    document.getElementById('kpi-cohort-resolvidos').textContent = cohortResolvidos;
+    document.getElementById('kpi-cohort-pendentes').textContent = cohortPendentes;
     document.getElementById('kpi-resolvido-anterior').textContent = resolvidosAnterior;
     document.getElementById('kpi-resolvido-mesmo').textContent = resolvidosMesmo;
     document.getElementById('kpi-resolvido-periodo').textContent = resolvidosPeriodo;

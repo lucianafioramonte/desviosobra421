@@ -562,6 +562,15 @@
   .oculta-secao {
     display: none !important;
   }
+  @media print {
+    .sem-quebra-pagina {
+      break-before: auto !important;
+      page-break-before: auto !important;
+    }
+  }
+  .oculta-filtro-fiscal {
+    display: none !important;
+  }
 </style>
 </head>
 <body>
@@ -628,7 +637,7 @@
     </div>
   </section>
 
-  <section class="grupo-filtrado">
+  <section class="grupo-filtrado sem-quebra-pagina">
     <div class="section-head">
       <h2>Por responsavel &mdash; <span id="titulo-data-periodo-2">periodo selecionado</span></h2>
       <div class="legend">
@@ -846,7 +855,7 @@
         <span class="filtro-discreto-label">Responsavel</span>
         <div class="setor-chips" id="desc-setor-chips"></div>
       </div>
-      <div class="filtro-discreto-linha">
+      <div class="filtro-discreto-linha oculta-filtro-fiscal">
         <span class="filtro-discreto-label">Fiscal</span>
         <div class="setor-chips" id="desc-usuario-chips"></div>
       </div>
@@ -1178,6 +1187,8 @@
       { valor: null, rotulo: 'Todos' },
       { valor: 'aberto', rotulo: 'Aberto' },
       { valor: 'resolvido', rotulo: 'Resolvido' },
+      { valor: 'aguardando', rotulo: 'Aguardando Solucao' },
+      { valor: 'reprovado', rotulo: 'Reprovado' },
     ];
     container.innerHTML = '';
     opcoes.forEach(op => {
@@ -1213,7 +1224,10 @@
     const partes = [];
     if (respSelecionadoDescricao) partes.push(respSelecionadoDescricao);
     if (usuarioSelecionadoDescricao) partes.push(usuarioSelecionadoDescricao);
-    if (statusSelecionado) partes.push(statusSelecionado === 'aberto' ? 'Aberto' : 'Resolvido');
+    if (statusSelecionado) {
+      const rotulosStatus = { aberto: 'Aberto', resolvido: 'Resolvido', aguardando: 'Aguardando Solucao', reprovado: 'Reprovado' };
+      partes.push(rotulosStatus[statusSelecionado] || 'Resolvido');
+    }
     if (embargoSelecionado !== null) partes.push(embargoSelecionado === 'nenhum' ? 'Sem restricao' : embargoSelecionado);
 
     const filtroBar = document.getElementById('filtro-ativo');
@@ -2197,6 +2211,8 @@
     if (usuarioSelecionadoDescricao) itensFiltrados = itensFiltrados.filter(i => i.d.usuario === usuarioSelecionadoDescricao);
     if (statusSelecionado === 'aberto') itensFiltrados = itensFiltrados.filter(i => !i.d.resolvido);
     if (statusSelecionado === 'resolvido') itensFiltrados = itensFiltrados.filter(i => i.d.resolvido);
+    if (statusSelecionado === 'aguardando') itensFiltrados = itensFiltrados.filter(i => (i.d.status || '').toUpperCase().includes('AGUARDANDO') || (i.d.status || '').toUpperCase().includes('ANÁLISE'));
+    if (statusSelecionado === 'reprovado') itensFiltrados = itensFiltrados.filter(i => (i.d.status || '').toUpperCase().includes('REPROVADO'));
     if (embargoSelecionado === 'Embargo') itensFiltrados = itensFiltrados.filter(i => i.d.embargo_tipo === 'Embargo');
     if (embargoSelecionado === 'Interdicao') itensFiltrados = itensFiltrados.filter(i => i.d.embargo_tipo === 'Interdicao');
     if (embargoSelecionado === 'nenhum') itensFiltrados = itensFiltrados.filter(i => !i.d.embargo);

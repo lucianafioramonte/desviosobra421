@@ -618,7 +618,7 @@
     </div>
     <div class="updated">
       Atualizado em<br>
-      <span class="num">17/08/2026 18:15</span>
+      <span class="num">17/08/2026 18:35</span>
       <div class="botoes-print">
         <button class="ghost btn-imprimir" id="btn-imprimir" type="button">Imprimir relatorio</button>
         <button class="ghost btn-imprimir" id="btn-imprimir-aberto" type="button">Imprimir lista de desvios em aberto</button>
@@ -908,6 +908,7 @@
     <div class="busca-bar">
       <input type="text" id="busca-desvio" placeholder="Buscar por codigo, responsavel ou descricao...">
       <button class="ghost" id="btn-ordenar-data" type="button">Ordenar por data de criacao &#8595;</button>
+      <button class="ghost" id="btn-ordenar-vencimento" type="button">Ordenar por vencimento</button>
     </div>
     <div class="filtro-ativo" id="filtro-ativo">
       Filtrando por: <strong id="filtro-nome"></strong>
@@ -1088,6 +1089,7 @@
   }
 
   let ordemDataAscendente = false; // padrao: mais recentes primeiro
+  let criterioOrdenacao = 'data_criacao'; // 'data_criacao' ou 'prazo'
 
   function renderLista(itens) {
     const container = document.getElementById('lista-desvios');
@@ -1103,10 +1105,11 @@
 
     itens
       .slice()
-      .sort((a, b) => ordemDataAscendente
-        ? (a.d.data_criacao || '').localeCompare(b.d.data_criacao || '')
-        : (b.d.data_criacao || '').localeCompare(a.d.data_criacao || '')
-      )
+      .sort((a, b) => {
+        const va = (a.d[criterioOrdenacao] || '');
+        const vb = (b.d[criterioOrdenacao] || '');
+        return ordemDataAscendente ? va.localeCompare(vb) : vb.localeCompare(va);
+      })
       .forEach(({ d, abriu, resolveu }) => {
         const card = document.createElement('div');
         card.className = 'desvio-card';
@@ -2402,13 +2405,37 @@
     renderListaDescricao();
   });
 
-  document.getElementById('btn-ordenar-data').addEventListener('click', (e) => {
-    ordemDataAscendente = !ordemDataAscendente;
-    e.target.innerHTML = ordemDataAscendente
-      ? 'Ordenar por data de criacao &#8593;'
-      : 'Ordenar por data de criacao &#8595;';
+  function atualizarBotoesOrdenacao() {
+    const seta = ordemDataAscendente ? '&#8593;' : '&#8595;';
+    document.getElementById('btn-ordenar-data').innerHTML =
+      'Ordenar por data de criacao' + (criterioOrdenacao === 'data_criacao' ? ' ' + seta : '');
+    document.getElementById('btn-ordenar-vencimento').innerHTML =
+      'Ordenar por vencimento' + (criterioOrdenacao === 'prazo' ? ' ' + seta : '');
+  }
+
+  document.getElementById('btn-ordenar-data').addEventListener('click', () => {
+    if (criterioOrdenacao === 'data_criacao') {
+      ordemDataAscendente = !ordemDataAscendente;
+    } else {
+      criterioOrdenacao = 'data_criacao';
+      ordemDataAscendente = false;
+    }
+    atualizarBotoesOrdenacao();
     renderListaDescricao();
   });
+
+  document.getElementById('btn-ordenar-vencimento').addEventListener('click', () => {
+    if (criterioOrdenacao === 'prazo') {
+      ordemDataAscendente = !ordemDataAscendente;
+    } else {
+      criterioOrdenacao = 'prazo';
+      ordemDataAscendente = false;
+    }
+    atualizarBotoesOrdenacao();
+    renderListaDescricao();
+  });
+
+  atualizarBotoesOrdenacao();
 
   document.getElementById('btn-imprimir').addEventListener('click', () => window.print());
 

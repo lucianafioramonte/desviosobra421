@@ -559,6 +559,9 @@
       page-break-before: always;
     }
   }
+  .oculta-secao {
+    display: none !important;
+  }
 </style>
 </head>
 <body>
@@ -751,7 +754,7 @@
     </div>
   </section>
 
-  <section class="grupo-filtrado">
+  <section class="grupo-filtrado oculta-secao">
     <div class="section-head"><h2>Desvios registrados por fiscal &mdash; <span id="titulo-data-periodo-usuario">periodo selecionado</span></h2></div>
     <div class="filter-bar">
       <button type="button" class="modo-btn-usuario" data-modo="semana">Semana</button>
@@ -1082,7 +1085,6 @@
           <div class="descricao">${d.descricao ? escapeHtml(d.descricao) : '<em>Sem descricao registrada.</em>'}</div>
           <div class="datas">
             Criado em <span class="num">${formatarDataBR(d.data_criacao) || '-'}</span>
-            por <strong${d.usuario === 'Nao informado' ? ' class="alerta-fiscal"' : ''}>${d.usuario === 'Nao informado' ? '⚠ Nao informado' : escapeHtml(d.usuario)}</strong>
             &nbsp;&middot;&nbsp;
             Finalizado em <span class="num">${formatarDataBR(d.data_finalizacao) || '-'}</span>
             ${duracaoHtml}
